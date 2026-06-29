@@ -1,4 +1,4 @@
-from rest_framework import generics 
+from rest_framework import generics, mixins, permissions
 
 from rest_framework.decorators import api_view 
 from rest_framework.response import Response
@@ -32,6 +32,7 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
 class ProductListAPIView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 
@@ -55,6 +56,17 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
     def perform_destroy(self, instance):
         super().perform_destroy(instance)
 
+
+
+
+class ProductMixinView(mixins.ListModelMixin, generics.GenericAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+
+    def post(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
 
 @api_view(["GET", "POST"])
